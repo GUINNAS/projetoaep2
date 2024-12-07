@@ -8,7 +8,6 @@
 #define MAX_LINE_LENGTH 256
 #define FILENAME "usuarios.txt"
 
-// Função simples de hash (não segura)
 unsigned long simpleHash(const char *str) {
     unsigned long hash = 5381;
     int c;
@@ -44,24 +43,24 @@ void incluirUsuario() {
     }
 
     char nome[100], senha[100];
-    printf("Digite o nome do usuário: ");
+    printf("Digite o nome do usuario: ");
     fgets(nome, sizeof(nome), stdin);
     nome[strcspn(nome, "\n")] = 0;
 
     do {
-        printf("Digite a senha do usuário (mínimo 8 caracteres, incluindo letras maiusculas, minusculas, numeros e caracteres especiais): ");
+        printf("Digite a senha do usuario (minimo 8 caracteres, incluindo letras maiusculas, minusculas, numeros e caracteres especiais): ");
         fgets(senha, sizeof(senha), stdin);
         senha[strcspn(senha, "\n")] = 0;
 
         if (!validarSenha(senha)) {
-            printf("Senha inválida! Tente novamente.\n");
+            printf("Senha invalida! Tente novamente.\n");
         }
     } while (!validarSenha(senha));
 
     unsigned long hash = simpleHash(senha);
     fprintf(file, "%s,%lu\n", nome, hash);
     fclose(file);
-    printf("Usuário adicionado com sucesso.\n");
+    printf("Usuario adicionado com sucesso.\n");
 }
 
 void alterarUsuario() {
@@ -81,18 +80,18 @@ void alterarUsuario() {
     }
     fclose(file);
 
-    printf("Usuários disponíveis para alteração:\n");
+    printf("Usuarios disponiveis para alteracao:\n");
     for (int i = 0; i < lineCount; i++) {
         printf("%d: %s", i + 1, lines[i]);
     }
 
     int index;
-    printf("Digite o número do usuário que deseja alterar: ");
+    printf("Digite o numero do usuario que deseja alterar: ");
     scanf("%d", &index);
     getchar();
 
     if (index < 1 || index > lineCount) {
-        printf("Usuário inválido.\n");
+        printf("Usuario inválido.\n");
         for (int i = 0; i < lineCount; i++) {
             free(lines[i]);
         }
@@ -100,11 +99,11 @@ void alterarUsuario() {
     }
 
     char nome[100], senha[100];
-    printf("Digite o novo nome do usuário: ");
+    printf("Digite o novo nome do usuario: ");
     fgets(nome, sizeof(nome), stdin);
     nome[strcspn(nome, "\n")] = 0;
 
-    printf("Digite a nova senha do usuário: ");
+    printf("Digite a nova senha do usuario: ");
     fgets(senha, sizeof(senha), stdin);
     senha[strcspn(senha, "\n")] = 0;
 
@@ -122,7 +121,7 @@ void alterarUsuario() {
         free(lines[i]);
     }
     fclose(file);
-    printf("Usuário alterado com sucesso.\n");
+    printf("Usuario alterado com sucesso.\n");
 }
 void excluirUsuario() {
     FILE *file = fopen(FILENAME, "r");
@@ -141,25 +140,24 @@ void excluirUsuario() {
     }
     fclose(file);
 
-    printf("Usuários disponíveis para exclusão:\n");
+    printf("Usuarios disponiveis para exclusao:\n");
     for (int i = 0; i < lineCount; i++) {
         printf("%d: %s", i + 1, lines[i]);
     }
 
     int index;
-    printf("Digite o número do usuário que deseja excluir: ");
+    printf("Digite o numero do usuario que deseja excluir: ");
     scanf("%d", &index);
     getchar();
 
     if (index < 1 || index > lineCount) {
-        printf("Usuário inválido.\n");
+        printf("Usuario invalido.\n");
         for (int i = 0; i < lineCount; i++) {
             free(lines[i]);
         }
         return;
     }
 
-    // Remover o usuário da lista
     free(lines[index - 1]);
     for (int i = index - 1; i < lineCount - 1; i++) {
         lines[i] = lines[i + 1];
@@ -177,7 +175,7 @@ void excluirUsuario() {
         free(lines[i]);
     }
     fclose(file);
-    printf("Usuário excluído com sucesso.\n");
+    printf("Usuario excluido com sucesso.\n");
 }
 
 void listarUsuarios() {
@@ -188,7 +186,7 @@ void listarUsuarios() {
     }
 
     char line[MAX_LINE_LENGTH];
-    printf("Usuários cadastrados:\n");
+    printf("Usuarios cadastrados:\n");
     while (fgets(line, sizeof(line), file)) {
         printf("%s", line);
     }
@@ -200,12 +198,12 @@ int main() {
 
     do {
         printf("\nMenu:\n");
-        printf("1. Listar Usuários\n");
-        printf("2. Incluir Usuário\n");
-        printf("3. Alterar Usuário\n");
-        printf("4. Excluir Usuário\n");
+        printf("1. Listar Usuarios\n");
+        printf("2. Incluir Usuario\n");
+        printf("3. Alterar Usuario\n");
+        printf("4. Excluir Usuario\n");
         printf("5. Sair\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &option);
         getchar();
 
@@ -226,7 +224,7 @@ int main() {
                 printf("Saindo...\n");
                 break;
             default:
-                printf("Opção inválida! Tente novamente.\n");
+                printf("Opção invalida! Tente novamente.\n");
         }
     } while (option != 5);
 
