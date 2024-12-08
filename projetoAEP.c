@@ -13,57 +13,57 @@ unsigned long simpleHash(const char *str) {
     int c;
 
     while ((c = *str++)) {
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+        hash = ((hash << 5) + hash) + c;
     }
 
     return hash;
 }
 
-int validarSenha(const char *senha) {
+int validPassword(const char *password) {
     int hasUpper = 0, hasLower = 0, hasDigit = 0, hasSpecial = 0;
-    int length = strlen(senha);
+    int length = strlen(password);
 
     if (length < 8) return 0;
 
     for (int i = 0; i < length; i++) {
-        if (isupper(senha[i])) hasUpper = 1;
-        else if (islower(senha[i])) hasLower = 1;
-        else if (isdigit(senha[i])) hasDigit = 1;
-        else if (ispunct(senha[i])) hasSpecial = 1;
+        if (isupper(password[i])) hasUpper = 1;
+        else if (islower(password[i])) hasLower = 1;
+        else if (isdigit(password[i])) hasDigit = 1;
+        else if (ispunct(password[i])) hasSpecial = 1;
     }
 
     return hasUpper && hasLower && hasDigit && hasSpecial;
 }
 
-void incluirUsuario() {
+void includeUser() {
     FILE *file = fopen(FILENAME, "a");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
         return;
     }
 
-    char nome[100], senha[100];
+    char username[100], password[100];
     printf("Digite o nome do usuario: ");
-    fgets(nome, sizeof(nome), stdin);
-    nome[strcspn(nome, "\n")] = 0;
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = 0;
 
     do {
-        printf("Digite a senha do usuario (minimo 8 caracteres, incluindo letras maiusculas, minusculas, numeros e caracteres especiais): ");
-        fgets(senha, sizeof(senha), stdin);
-        senha[strcspn(senha, "\n")] = 0;
+        printf("Digite a senha do usuario (minimo 8 caracteres, incluindo letras maiusculas, minusculas, numeros e caracteres especiais).: ");
+        fgets(password, sizeof(password), stdin);
+        password[strcspn(password, "\n")] = 0;
 
-        if (!validarSenha(senha)) {
-            printf("Senha invalida! Tente novamente.\n");
+        if (!validPassword(password)) {
+            printf("senha invalida! Tente novamente.\n");
         }
-    } while (!validarSenha(senha));
+    } while (!validPassword(password));
 
-    unsigned long hash = simpleHash(senha);
-    fprintf(file, "%s,%lu\n", nome, hash);
+    unsigned long hash = simpleHash(password);
+    fprintf(file, "%s,%lu\n", username, hash);
     fclose(file);
     printf("Usuario adicionado com sucesso.\n");
 }
 
-void alterarUsuario() {
+void modifyUser() {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -80,13 +80,13 @@ void alterarUsuario() {
     }
     fclose(file);
 
-    printf("Usuarios disponiveis para alteracao:\n");
+    printf("Usuarios disponiveis para alteracao.:\n");
     for (int i = 0; i < lineCount; i++) {
         printf("%d: %s", i + 1, lines[i]);
     }
 
     int index;
-    printf("Digite o numero do usuario que deseja alterar: ");
+    printf("Digite o numero do usuario que deseja alterar.: ");
     scanf("%d", &index);
     getchar();
 
@@ -98,17 +98,17 @@ void alterarUsuario() {
         return;
     }
 
-    char nome[100], senha[100];
-    printf("Digite o novo nome do usuario: ");
-    fgets(nome, sizeof(nome), stdin);
-    nome[strcspn(nome, "\n")] = 0;
+    char username[100], password[100];
+    printf("Digite o novo nome do usuario.: ");
+    fgets(username, sizeof(username), stdin);
+    username[strcspn(username, "\n")] = 0;
 
-    printf("Digite a nova senha do usuario: ");
-    fgets(senha, sizeof(senha), stdin);
-    senha[strcspn(senha, "\n")] = 0;
+    printf("Digite a nova senha do usuario.: ");
+    fgets(password, sizeof(password), stdin);
+    password[strcspn(password, "\n")] = 0;
 
-    unsigned long hash = simpleHash(senha);
-    snprintf(lines[index - 1], MAX_LINE_LENGTH, "%s,%lu\n", nome, hash);
+    unsigned long hash = simpleHash(password);
+    snprintf(lines[index - 1], MAX_LINE_LENGTH, "%s,%lu\n", username, hash);
 
     file = fopen(FILENAME, "w");
     if (file == NULL) {
@@ -123,7 +123,7 @@ void alterarUsuario() {
     fclose(file);
     printf("Usuario alterado com sucesso.\n");
 }
-void excluirUsuario() {
+void deleteUser() {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -140,13 +140,13 @@ void excluirUsuario() {
     }
     fclose(file);
 
-    printf("Usuarios disponiveis para exclusao:\n");
+    printf("Usuarios disponiveis para exclusao.:\n");
     for (int i = 0; i < lineCount; i++) {
         printf("%d: %s", i + 1, lines[i]);
     }
 
     int index;
-    printf("Digite o numero do usuario que deseja excluir: ");
+    printf("Digite o numero do usuario que deseja excluir.: ");
     scanf("%d", &index);
     getchar();
 
@@ -178,7 +178,7 @@ void excluirUsuario() {
     printf("Usuario excluido com sucesso.\n");
 }
 
-void listarUsuarios() {
+void listUsers() {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -186,7 +186,7 @@ void listarUsuarios() {
     }
 
     char line[MAX_LINE_LENGTH];
-    printf("Usuarios cadastrados:\n");
+    printf("Usuarios cadastrados.:\n");
     while (fgets(line, sizeof(line), file)) {
         printf("%s", line);
     }
@@ -209,22 +209,22 @@ int main() {
 
         switch (option) {
             case 1:
-                listarUsuarios();
+                listUsers();
                 break;
             case 2:
-                incluirUsuario();
+                includeUser();
                 break;
             case 3:
-                alterarUsuario();
+                modifyUser();
                 break;
             case 4:
-                excluirUsuario();
+                deleteUser();
                 break;
             case 5:
                 printf("Saindo...\n");
                 break;
             default:
-                printf("Opção invalida! Tente novamente.\n");
+                printf("Opcao invalida, Tente novamente.\n");
         }
     } while (option != 5);
 
