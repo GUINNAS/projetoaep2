@@ -3,20 +3,21 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdint.h>
+#include <openssl/sha.h>
 
 #define MAX_USERS 100
 #define MAX_LINE_LENGTH 256
 #define FILENAME "usuarios.txt"
 
-unsigned long simpleHash(const char *str) {
-    unsigned long hash = 5381;
-    int c;
+void sha256(const char *str, unsigned char outputBuffer[SHA256_DIGEST_LENGTH]) {
+    SHA256((unsigned char*)str, strlen(str), outputBuffer);
+}
 
-    while ((c = *str++)) {
-        hash = ((hash << 5) + hash) + c;
+void hashToString(unsigned char hash[SHA256_DIGEST_LENGTH], char outputBuffer[65]) {
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+        sprintf(&outputBuffer[i * 2], "%02x", hash[i]);
     }
-
-    return hash;
+    outputBuffer[64] = 0;
 }
 
 int validPassword(const char *password) {
@@ -35,7 +36,7 @@ int validPassword(const char *password) {
     return hasUpper && hasLower && hasDigit && hasSpecial;
 }
 
-void includeUser() {
+void includeUser () {
     FILE *file = fopen(FILENAME, "a");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -57,13 +58,16 @@ void includeUser() {
         }
     } while (!validPassword(password));
 
-    unsigned long hash = simpleHash(password);
-    fprintf(file, "%s,%lu\n", username, hash);
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    char hashString[65];
+    sha256(password, hash);
+    hashToString(hash, hashString);
+    fprintf(file, "%s,%s\n", username, hashString);
     fclose(file);
     printf("Usuario adicionado com sucesso.\n");
 }
 
-void modifyUser() {
+void modifyUser () {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -107,8 +111,11 @@ void modifyUser() {
     fgets(password, sizeof(password), stdin);
     password[strcspn(password, "\n")] = 0;
 
-    unsigned long hash = simpleHash(password);
-    snprintf(lines[index - 1], MAX_LINE_LENGTH, "%s,%lu\n", username, hash);
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    char hashString[65];
+    sha256(password, hash);
+    hashToString(hash, hashString);
+    snprintf(lines[index - 1], MAX_LINE_LENGTH, "%s,%s\n", username, hashString);
 
     file = fopen(FILENAME, "w");
     if (file == NULL) {
@@ -123,7 +130,8 @@ void modifyUser() {
     fclose(file);
     printf("Usuario alterado com sucesso.\n");
 }
-void deleteUser() {
+
+void deleteUser () {
     FILE *file = fopen(FILENAME, "r");
     if (file == NULL) {
         perror("Erro ao abrir o arquivo");
@@ -197,7 +205,7 @@ int main() {
     int option;
 
     do {
-        printf("\nMenu:\n");
+        printf("\nMenu.:\n");
         printf("1. Listar Usuarios\n");
         printf("2. Incluir Usuario\n");
         printf("3. Alterar Usuario\n");
@@ -212,13 +220,13 @@ int main() {
                 listUsers();
                 break;
             case 2:
-                includeUser();
+                includeUser ();
                 break;
             case 3:
-                modifyUser();
+                modifyUser ();
                 break;
             case 4:
-                deleteUser();
+                deleteUser ();
                 break;
             case 5:
                 printf("Saindo...\n");
