@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <openssl/sha.h>
+#include <math.h>
 
 #define MAX_USERS 100
 #define MAX_LINE_LENGTH 256
