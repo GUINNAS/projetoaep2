@@ -3,25 +3,21 @@
 #include <vector>
 #include <openssl/evp.h>
 
-// Estrutura de dados para armazenar informações de usuários
 struct Usuario {
     std::string nome;
     std::string senha;
 };
 
-// Estrutura de dados para armazenar informações de blocos
 struct Bloco {
     std::string dados;
     std::string hash;
     Bloco* anterior;
 };
 
-// Classe para gerenciar a blockchain
 class Blockchain {
 public:
     std::vector<Bloco*> blocos;
 
-    // Função para adicionar um novo bloco à blockchain
     void adicionarBloco(std::string dados) {
         Bloco* novoBloco = new Bloco();
         novoBloco->dados = dados;
@@ -30,7 +26,6 @@ public:
         blocos.push_back(novoBloco);
     }
 
-    // Função para calcular o hash de um bloco
     std::string calcularHash(std::string dados) {
         unsigned char hash[EVP_MD_size(EVP_sha256())];
         EVP_MD_CTX* mdctx = EVP_MD_CTX_new();
@@ -39,7 +34,6 @@ public:
         EVP_DigestFinal(mdctx, hash, NULL);
         EVP_MD_CTX_free(mdctx);
 
-        // Converte o hash para uma string hexadecimal
         std::string hashString;
         for (int i = 0; i < EVP_MD_size(EVP_sha256()); i++) {
             char hex[3];
@@ -51,13 +45,11 @@ public:
     }
 };
 
-// Classe para gerenciar os usuários
 class GerenciadorDeUsuarios {
 public:
     std::vector<Usuario> usuarios;
     Blockchain blockchain;
 
-    // Função para adicionar um novo usuário
     void adicionarUsuario(std::string nome, std::string senha) {
         Usuario novoUsuario;
         novoUsuario.nome = nome;
@@ -66,7 +58,6 @@ public:
         blockchain.adicionarBloco("Usuário adicionado: " + nome);
     }
 
-    // Função para remover um usuário
     void removerUsuario(std::string nome) {
         for (auto it = usuarios.begin(); it != usuarios.end(); ++it) {
             if (it->nome == nome) {
@@ -77,7 +68,6 @@ public:
         }
     }
 
-    // Função para atualizar um usuário
     void atualizarUsuario(std::string nome, std::string novaSenha) {
         for (auto& usuario : usuarios) {
             if (usuario.nome == nome) {
@@ -88,7 +78,6 @@ public:
         }
     }
 
-    // Função para consultar um usuário
     void consultarUsuario(std::string nome) {
         for (const auto& usuario : usuarios) {
             if (usuario.nome == nome) {
